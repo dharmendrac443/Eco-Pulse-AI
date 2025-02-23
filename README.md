@@ -1,16 +1,34 @@
-# eco_pulse_ai
+# Carbon Footprint Calculator
 
-A new Flutter project.
+## Overview
+We are developing an Android application for carbon footprint calculation using Flutter and Firebase. This application helps users track and reduce their carbon footprint through various features like personalized calculations, leaderboards, and user challenges.
 
-## Getting Started
+## Contributors
+- **Ajitesh**: Involved in both frontend and backend development and bug fixing.
+  - **Frontend Only**: Calculate Page, Leaderboard Page.
+- **Dharmendra**: Worked on the following:
+  - **Frontend & Backend**: Login Page, Profile Page, Registration Page, Forgot Password Page.
+  - **Backend Only**: Calculate Page, Leaderboard.
+- **Phanindra**: Involved in frontend and UI/UX of the project.
+  - **Frontend Only**: Home Page, Challenges Page, Calculate Page, Login Page, Registration Page, Forgot Password Page. 
 
-This project is a starting point for a Flutter application.
+## Features
+- User authentication (Login, Registration, Forgot Password)
+- Profile management
+- Carbon footprint calculation
+- Leaderboard for user comparisons
+- User challenges to promote eco-friendly habits
+- Firebase integration for real-time data storage and management
 
-A few resources to get you started if this is your first Flutter project:
+## Technologies Used
+- **Framework**: Flutter
+- **Backend**: Firebase
+- **Database**: Firestore
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Installation
+1. Clone the repository.
+2. Install Flutter and set up the required dependencies.
+3. Configure Firebase authentication and database.
+4. Run the application using:
+   ```sh
+   flutter run
