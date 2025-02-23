@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChallengesScreen extends StatefulWidget {
   const ChallengesScreen({Key? key}) : super(key: key);
@@ -58,10 +56,10 @@ class _ChallengesScreenState extends State<ChallengesScreen>
   Widget _buildChallengeSection(String title, Color color) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
       ),
-      color: Colors.white,
       elevation: 5,
+      margin: const EdgeInsets.all(10),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -70,12 +68,12 @@ class _ChallengesScreenState extends State<ChallengesScreen>
             Text(
               title,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: color,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ...challengeData[title]!.asMap().entries.map((entry) {
               final index = entry.key;
               final challenge = entry.value;
@@ -94,11 +92,20 @@ class _ChallengesScreenState extends State<ChallengesScreen>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      color: Colors.white,
       elevation: 3,
+      margin: const EdgeInsets.symmetric(vertical: 5),
       child: ListTile(
-        leading: Icon(Icons.check_circle, color: color),
-        title: Text(challenge, style: TextStyle(fontWeight: FontWeight.bold)),
+        leading: Icon(
+          Icons.check_circle,
+          color: isCompleted ? color : Colors.grey[400],
+        ),
+        title: Text(
+          challenge,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: isCompleted ? color : Colors.black,
+          ),
+        ),
         trailing: Checkbox(
           value: isCompleted,
           onChanged: (bool? value) {
@@ -107,28 +114,25 @@ class _ChallengesScreenState extends State<ChallengesScreen>
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Confirm Completion'),
-                  content: const Text('Have you really planted a tree?'),
+                  content: const Text('Have you really completed this challenge?'),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('No'),
+                      child: const Text('No', style: TextStyle(color: Colors.red)),
                     ),
                     TextButton(
-                      onPressed: () async {
+                      onPressed: () {
                         Navigator.pop(context);
                         final now = DateTime.now();
                         final normalizedDate = DateTime(now.year, now.month, now.day);
-
                         if (!isCompleted) {
                           setState(() {
                             challengeCompletions[category]![index].add(normalizedDate);
+                            lastCompletionDate = DateTime.now();
                           });
-
-                          // ✅ Update Firestore: Increment `treesPlanted`
-                          await _incrementTreesPlanted();
                         }
                       },
-                      child: const Text('Yes'),
+                      child: const Text('Yes', style: TextStyle(color: Colors.green)),
                     ),
                   ],
                 ),
@@ -142,46 +146,22 @@ class _ChallengesScreenState extends State<ChallengesScreen>
               });
             }
           },
+          activeColor: color,
         ),
       ),
     );
   }
 
-  Future<void> _incrementTreesPlanted() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        print("User not signed in.");
-        return;
-      }
-
-      String userId = user.uid;
-      final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
-
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(userRef);
-        if (!snapshot.exists) {
-          throw Exception("User document does not exist!");
-        }
-
-        int currentTreesPlanted = (snapshot.data() as Map<String, dynamic>)['treesPlanted'] ?? 0;
-        transaction.update(userRef, {'treesPlanted': currentTreesPlanted + 1});
-      });
-
-      print("Tree count updated successfully!");
-    } catch (e) {
-      print("Error updating tree count: $e");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: TabBar(
+        title: const Text('Challenges', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        bottom: TabBar(
           controller: _tabController,
+          indicatorColor: Colors.blue[900],
+          labelColor: Colors.blue[900],
+          unselectedLabelColor: Colors.grey[600],
           tabs: const [
             Tab(text: 'Daily'),
             Tab(text: 'Weekly'),
@@ -219,11 +199,11 @@ class _ChallengesScreenState extends State<ChallengesScreen>
   Color _getCategoryColor(String category) {
     switch (category) {
       case 'Daily':
-        return Colors.green;
+        return Colors.blue;
       case 'Weekly':
-        return Colors.green;
+        return Colors.orange;
       case 'Monthly':
-        return Colors.green;
+        return Colors.purple;
       default:
         return Colors.grey;
     }
@@ -266,29 +246,39 @@ class ProgressCalendar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue[900],
+            ),
+          ),
+          const SizedBox(height: 10),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 7,
               childAspectRatio: 1.0,
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
             ),
             itemCount: days.length,
             itemBuilder: (context, index) {
               final day = days[index];
               final isCompleted = dates.any((d) => _isSameDay(d, day));
               return Container(
-                margin: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
-                  color: isCompleted ? Colors.green[300] : Colors.grey[200],
-                  borderRadius: BorderRadius.circular(4),
+                  color: isCompleted ? Colors.blue[300] : Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
                   child: Text(
                     day.day.toString(),
                     style: TextStyle(
                       color: isCompleted ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),

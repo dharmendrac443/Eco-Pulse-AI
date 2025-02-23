@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class CalculateScreen extends StatefulWidget {
   const CalculateScreen({super.key});
 
-  @override 
+  @override
   State<CalculateScreen> createState() => _CalculateState();
 }
 
@@ -216,28 +216,28 @@ class _CalculateState extends State<CalculateScreen> {
           // If data exists, update the existing document
           var existingData = querySnapshot.docs.first.data();
           double existingElectricity =
-              (existingData['Electricity'] ?? 0).toDouble();
+          (existingData['Electricity'] ?? 0).toDouble();
           double existingTransport =
-              (existingData['Transport'] ?? 0).toDouble();
+          (existingData['Transport'] ?? 0).toDouble();
           double existingFood = (existingData['Food'] ?? 0).toDouble();
           double existingWater = (existingData['Water'] ?? 0).toDouble();
           double existingCarbonFootprint =
-              (existingData['carbonFootprint'] ?? 0).toDouble();
+          (existingData['carbonFootprint'] ?? 0).toDouble();
           // If data exists, update the existing document
           await FirebaseFirestore.instance
               .collection('userData')
               .doc(
-                  querySnapshot.docs.first.id) // Get the existing document's ID
+              querySnapshot.docs.first.id) // Get the existing document's ID
               .update({
             // ...categoryAmounts, // Update with the new category amounts
             'Transport':
-                existingTransport + (transportCarbonFootprintResult ?? 0),
+            existingTransport + (transportCarbonFootprintResult ?? 0),
             'Electricity':
-                existingElectricity + (electricityCarbonFootprintResult ?? 0),
+            existingElectricity + (electricityCarbonFootprintResult ?? 0),
             'Food': existingFood + (foodCarbonFootprintResult ?? 0),
             'Water': existingWater + (waterCarbonFootprintResult ?? 0),
             'carbonFootprint':
-                existingCarbonFootprint + (totalCarbonFootprintResult ?? 0.0),
+            existingCarbonFootprint + (totalCarbonFootprintResult ?? 0.0),
           });
 
           setState(() {
@@ -261,7 +261,10 @@ class _CalculateState extends State<CalculateScreen> {
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Data updated successfully!')),
+            SnackBar(
+              content: Text('Data updated successfully!'),
+              backgroundColor: Colors.blue[900], // Updated color
+            ),
           );
         } else {
           // If no existing data, create a new document
@@ -280,7 +283,7 @@ class _CalculateState extends State<CalculateScreen> {
 
           setState(() {
             showElectricityCarbonFootprintResult =
-                categoryAmounts['Electricity'];
+            categoryAmounts['Electricity'];
             showTransportCarbonFootprintResult = categoryAmounts['Transport'];
             showFoodCarbonFootprintResult = categoryAmounts['Food'];
             showWaterCarbonFootprintResult = categoryAmounts['Water'];
@@ -330,7 +333,7 @@ class _CalculateState extends State<CalculateScreen> {
     if (user == null) return;
 
     final userDoc =
-        FirebaseFirestore.instance.collection('streak').doc(user.uid);
+    FirebaseFirestore.instance.collection('streak').doc(user.uid);
 
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       final snapshot = await transaction.get(userDoc);
@@ -353,7 +356,7 @@ class _CalculateState extends State<CalculateScreen> {
       DateTime lastLogin =
           (data['lastLogin'] as Timestamp?)?.toDate() ?? DateTime(2000);
       DateTime lastLoginDate =
-          DateTime(lastLogin.year, lastLogin.month, lastLogin.day);
+      DateTime(lastLogin.year, lastLogin.month, lastLogin.day);
 
       if (lastLoginDate == today.subtract(const Duration(days: 1))) {
         // Consecutive day: Increment streak
@@ -378,7 +381,6 @@ class _CalculateState extends State<CalculateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -388,9 +390,9 @@ class _CalculateState extends State<CalculateScreen> {
               Text(
                 'Calculate your carbon footprint',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 24, // Larger font size
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.blue[900],
                 ),
               ),
               SizedBox(height: 16),
@@ -399,30 +401,28 @@ class _CalculateState extends State<CalculateScreen> {
                   height: 300,
                   width: 300,
                   child: GridView.count(
-                    crossAxisCount: 2, // Ensures two categories per row
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    shrinkWrap: true, // Makes GridView fit inside the Column
-                    physics:
-                        NeverScrollableScrollPhysics(), // Prevents internal scrolling
+                    crossAxisCount: 2, // Two items per row
+                    crossAxisSpacing: 16, // Horizontal spacing between items
+                    mainAxisSpacing: 16, // Vertical spacing between items
+                    childAspectRatio: 1.2, // Adjust the aspect ratio for a more natural look
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(), // Prevent internal scrolling
                     children: [
                       _buildCategoryBox(
                         'Electricity',
-                        Icon(Icons.electrical_services,
-                            size: 50, color: Colors.green),
+                        Icon(Icons.electrical_services, size: 50, color: Colors.blue),
                       ),
                       _buildCategoryBox(
                         'Transport',
-                        Icon(Icons.directions_car,
-                            size: 50, color: Colors.green),
+                        Icon(Icons.directions_car, size: 50, color: Colors.blue),
                       ),
                       _buildCategoryBox(
                         'Water',
-                        Icon(Icons.water, size: 50, color: Colors.green),
+                        Icon(Icons.water, size: 50, color: Colors.blue),
                       ),
                       _buildCategoryBox(
                         'Food',
-                        Icon(Icons.fastfood, size: 50, color: Colors.green),
+                        Icon(Icons.fastfood, size: 50, color: Colors.blue),
                       ),
                     ],
                   ),
@@ -441,23 +441,27 @@ class _CalculateState extends State<CalculateScreen> {
                 ],
                 SizedBox(height: 26),
                 isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : ElevatedButton(
-                        onPressed: saveData,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[100],
-                          iconColor: Colors.white,
-                          minimumSize: Size(double.infinity, 50),
-                        ),
-                        child: Text(
-                          'Calculate',
-                          style: TextStyle(
-                            color: Colors.green[900],
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.blue[900], // Updated color
                       ),
+                    )
+                  : ElevatedButton(
+                  onPressed: saveData,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[100], // Updated color
+                    iconColor: Colors.white,
+                    minimumSize: Size(double.infinity, 50),
+                  ),
+                  child: Text(
+                    'Calculate',
+                    style: TextStyle(
+                      color: Colors.blue[900], // Updated color
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
                 SizedBox(height: 20),
                 if (showElectricityCarbonFootprintResult != null ||
                     showTransportCarbonFootprintResult != null ||
@@ -465,7 +469,11 @@ class _CalculateState extends State<CalculateScreen> {
                     showFoodCarbonFootprintResult != null) ...[
                   Text(
                     'Carbon Footprint Saved by',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue[900], // Updated color
+                    ),
                   ),
                   SizedBox(height: 20),
                   if (showElectricityCarbonFootprintResult != null)
@@ -502,21 +510,21 @@ class _CalculateState extends State<CalculateScreen> {
         height: 120,
         width: 120,
         child: Card(
-          color: Colors.white,
           elevation: isSelected ? 5 : 2,
-          child: Center(
+          color: isSelected ? Colors.blue[100] : Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0), // Add padding inside the card
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
               children: [
-                SizedBox(
-                  height: 24,
-                ),
                 icon,
                 SizedBox(height: 8),
                 Text(
                   category,
                   style: TextStyle(
-                    color: Colors.black,
-                    //fontWeight: FontWeight.bold,
+                    color: Colors.blue[900],
+                    fontSize: 16, // Slightly larger font size
+                    fontWeight: FontWeight.bold, // Bold text for better readability
                   ),
                 ),
               ],
@@ -535,12 +543,23 @@ class _CalculateState extends State<CalculateScreen> {
           controller: controllers['LastMonthElectricity'],
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            suffixText: 'KWh',
-            hintText: 'Enter last month Units',
+            labelText: 'Last Month Units',
+            labelStyle: TextStyle(color: Colors.blue[900]),
+            hintText: 'Enter last month units in KWh',
+            hintStyle: TextStyle(color: Colors.grey[600]),
+            filled: true,
+            fillColor: Colors.blue[50],
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  BorderSide(color: Colors.grey, width: 1), // Default border
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!, width: 2),
             ),
           ),
         ),
@@ -549,19 +568,29 @@ class _CalculateState extends State<CalculateScreen> {
           controller: controllers['ThisMonthElectricity'],
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            suffixText: 'KWh',
-            hintText: 'Enter this month Units',
+            labelText: 'This Month Units',
+            labelStyle: TextStyle(color: Colors.blue[900]),
+            hintText: 'Enter this month units in KWh',
+            hintStyle: TextStyle(color: Colors.grey[600]),
+            filled: true,
+            fillColor: Colors.blue[50],
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  BorderSide(color: Colors.grey, width: 1), // Default border
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!, width: 2),
             ),
           ),
         ),
       ],
     );
   }
-
   Widget _buildTransportOptions() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -569,17 +598,27 @@ class _CalculateState extends State<CalculateScreen> {
         DropdownButtonFormField<String>(
           decoration: InputDecoration(
             labelText: 'Select Used Transport',
+            labelStyle: TextStyle(color: Colors.blue[900]),
+            filled: true,
+            fillColor: Colors.blue[50],
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  BorderSide(color: Colors.grey, width: 1), // Default border
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!, width: 2),
             ),
           ),
           value: selectedUsedTransport,
           onChanged: (String? newValue) {
             setState(() {
               selectedUsedTransport = newValue;
-              selectedInsteadOfTransport = null; // Reset instead of transport
+              selectedInsteadOfTransport = null;
             });
           },
           items: vehicleHierarchy.map<DropdownMenuItem<String>>((String value) {
@@ -587,23 +626,33 @@ class _CalculateState extends State<CalculateScreen> {
               value: value,
               child: Row(
                 children: [
-                  Icon(vehicleIcons[value], size: 24),
+                  Icon(vehicleIcons[value], size: 24, color: Colors.blue[900]),
                   SizedBox(width: 8),
-                  Text(value),
+                  Text(value, style: TextStyle(color: Colors.blue[900])),
                 ],
               ),
             );
           }).toList(),
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 16),
         if (selectedUsedTransport != null)
           DropdownButtonFormField<String>(
             decoration: InputDecoration(
               labelText: 'Select Instead Of Transport',
+              labelStyle: TextStyle(color: Colors.blue[900]),
+              filled: true,
+              fillColor: Colors.blue[50],
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide:
-                    BorderSide(color: Colors.grey, width: 1), // Default border
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.blue[900]!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.blue[900]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.blue[900]!, width: 2),
               ),
             ),
             value: selectedInsteadOfTransport,
@@ -614,39 +663,49 @@ class _CalculateState extends State<CalculateScreen> {
             },
             items: vehicleHierarchy
                 .where((vehicle) =>
-                    vehicleHierarchy.indexOf(vehicle) >
-                    vehicleHierarchy.indexOf(selectedUsedTransport!))
+            vehicleHierarchy.indexOf(vehicle) >
+                vehicleHierarchy.indexOf(selectedUsedTransport!))
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Row(
                   children: [
-                    Icon(vehicleIcons[value], size: 24),
+                    Icon(vehicleIcons[value], size: 24, color: Colors.blue[900]),
                     SizedBox(width: 8),
-                    Text(value),
+                    Text(value, style: TextStyle(color: Colors.blue[900])),
                   ],
                 ),
               );
             }).toList(),
           ),
-        SizedBox(height: 10),
+        SizedBox(height: 16),
         TextField(
           controller: controllers['Transport'],
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            suffixText: 'Km',
+            labelText: 'Kilometers Traveled',
+            labelStyle: TextStyle(color: Colors.blue[900]),
             hintText: 'Enter kilometers traveled',
+            hintStyle: TextStyle(color: Colors.grey[600]),
+            filled: true,
+            fillColor: Colors.blue[50],
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide:
-                  BorderSide(color: Colors.grey, width: 1), // Default border
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.blue[900]!, width: 2),
             ),
           ),
         ),
       ],
     );
   }
-
   Widget _buildWaterOptions() {
     return TextField(
       controller: controllers['Water'],
@@ -657,7 +716,7 @@ class _CalculateState extends State<CalculateScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide:
-              BorderSide(color: Colors.grey, width: 1), // Default border
+          BorderSide(color: Colors.grey, width: 1), // Default border
         ),
       ),
     );
@@ -673,7 +732,7 @@ class _CalculateState extends State<CalculateScreen> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide:
-              BorderSide(color: Colors.grey, width: 1), // Default border
+          BorderSide(color: Colors.grey, width: 1), // Default border
         ),
       ),
     );
@@ -683,8 +742,12 @@ class _CalculateState extends State<CalculateScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Text(
-        '$category: ${value.toStringAsFixed(2)} kg CO₂', // Format value to 2 decimal places
-        style: TextStyle(fontSize: 18),
+        '$category: ${value.toStringAsFixed(2)} kg CO₂',
+        style: TextStyle(
+          fontSize: 18,
+          color: Colors.blue[900],
+          fontWeight: FontWeight.bold, // Bold text for emphasis
+        ),
       ),
     );
   }

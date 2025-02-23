@@ -10,56 +10,66 @@ class CustomNavBar extends StatelessWidget {
     super.key,
   });
 
-  Widget _buildNavIcon(IconData icon, IconData icon_outline, int index) {
-    return IconButton(
-      icon: Container(
-        decoration: BoxDecoration(
-          color: currentIndex == index ? Colors.green[100] : Colors.transparent, // Green background when selected
-          borderRadius: BorderRadius.circular(15), // Rounded edges
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Icon(
-            currentIndex == index ? icon: icon_outline,
-            color: currentIndex == index ? Colors.green[900]: Colors.black,
-            size: currentIndex == index ? 35 : 28,
+  // Helper method to build navigation icons
+  Widget _buildNavIcon(IconData icon, IconData iconOutline, int index, String label) {
+    return GestureDetector(
+      onTap: () => onItemTapped(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: currentIndex == index ? Colors.blue[100] : Colors.transparent,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Icon(
+              currentIndex == index ? icon : iconOutline,
+              color: currentIndex == index ? Colors.blue[900] : Colors.grey[700],
+              size: currentIndex == index ? 30 : 26,
+            ),
           ),
-        ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: currentIndex == index ? Colors.blue[900] : Colors.grey[700],
+              fontSize: 12,
+              fontWeight: currentIndex == index ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ],
       ),
-      onPressed: () => onItemTapped(index),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Colors.grey, width: 0.5),
-        ),
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-            //top: Radius.circular(20),
-            ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(20),
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
           ),
         ],
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
       ),
-      padding:
-          const EdgeInsets.only(top: 5, left: 20, right: 20, bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildNavIcon(Icons.home, Icons.home_outlined, 0),
-          _buildNavIcon(Icons.add_circle, Icons.add_circle_outline, 1),
-          _buildNavIcon(Icons.leaderboard, Icons.leaderboard_outlined, 2),
-          _buildNavIcon(Icons.task, Icons.task_outlined, 3),
-        ],
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: SafeArea(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavIcon(Icons.home_rounded, Icons.home_outlined, 0, 'Home'),
+            _buildNavIcon(Icons.add_circle_rounded, Icons.add_circle_outline, 1, 'Add'),
+            _buildNavIcon(Icons.leaderboard_rounded, Icons.leaderboard_outlined, 2, 'Stats'),
+            _buildNavIcon(Icons.task_rounded, Icons.task_outlined, 3, 'Tasks'),
+          ],
+        ),
       ),
     );
   }
